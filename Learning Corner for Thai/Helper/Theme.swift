@@ -32,9 +32,8 @@ struct Theme {
     //MARK: - Brand Colors
     static let correctColor = "BrandGreen"
     static let redColor = "BrandRed"
-    static let tint = "Tint"
-    static let lightTint = "LightTint"
-    static let primaryLabel = "PrimaryLabel"
-    static let secondaryLabel = "SecondaryLabel"
-
+    static let tint = "ThemeTint"
+    static let lightTint = "ThemeLightTint"
+    static let primaryLabel = "ThemePrimaryLabel"
+    static let secondaryLabel = "ThemeSecondaryLabel"
 }
