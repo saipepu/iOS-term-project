@@ -31,6 +31,7 @@
 		B7DD9E4F2C83768200B777F7 /* GlossaryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7DD9E4E2C83768200B777F7 /* GlossaryModel.swift */; };
 		B7DD9E512C8377BF00B777F7 /* CourseMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7DD9E502C8377BF00B777F7 /* CourseMock.swift */; };
 		B7DD9E532C8377F600B777F7 /* GlossaryMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7DD9E522C8377F600B777F7 /* GlossaryMock.swift */; };
+		B7FF86732C846FF800348538 /* BaseTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7FF86722C846FF800348538 /* BaseTabBarController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,6 +61,7 @@
 		B7DD9E4E2C83768200B777F7 /* GlossaryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlossaryModel.swift; sourceTree = "<group>"; };
 		B7DD9E502C8377BF00B777F7 /* CourseMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseMock.swift; sourceTree = "<group>"; };
 		B7DD9E522C8377F600B777F7 /* GlossaryMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlossaryMock.swift; sourceTree = "<group>"; };
+		B7FF86722C846FF800348538 /* BaseTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseTabBarController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +124,7 @@
 				B72D38BE2C805B9600B90BEB /* Profile */,
 				B72D38BD2C805B8D00B90BEB /* Leaderboard */,
 				B72D38BC2C805B8400B90BEB /* Home */,
+				B7FF86722C846FF800348538 /* BaseTabBarController.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -293,6 +296,7 @@
 				B7DD9E4B2C83173A00B777F7 /* ReusableSearchBar.swift in Sources */,
 				B72D38C22C805BA600B90BEB /* ProfileViewController.swift in Sources */,
 				B72D38D22C805C8C00B90BEB /* Constants.swift in Sources */,
+				B7FF86732C846FF800348538 /* BaseTabBarController.swift in Sources */,
 				B72D38CA2C805BFB00B90BEB /* MyViewModel.swift in Sources */,
 				B7DD9E532C8377F600B777F7 /* GlossaryMock.swift in Sources */,
 				B72D38A32C805B4700B90BEB /* AppDelegate.swift in Sources */,

@@ -8,7 +8,7 @@
 import Foundation
 
 class Constants {
-    
+    //MARK: - Image Names
     static let profileImageA = "profile_1"
     static let profileImageB = "profile_2"
     static let profileImageC = "profile_3"
@@ -18,7 +18,16 @@ class Constants {
     static let makeFriendsImage = "making_friends"
 
 
+    //MARK: - Tab Bar Item Images
+    static let home = "home"
+    static let selectedHome = "selectedHome"
+    static let leaderboard = "leaderboard"
+    static let selectedLeaderboard = "selectedLeaderboard"
+    static let profile = "profile"
+    static let selectedProfile = "selectedProfile"
 
+    
+    //MARK: - Reuse Identifiers
     static let leaderboardCellIdentifier = "LeaderboardCell"
     static let courseCellIdentifier = "CourseCell"
 }
