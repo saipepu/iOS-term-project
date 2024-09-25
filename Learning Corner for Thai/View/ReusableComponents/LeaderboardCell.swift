@@ -113,3 +113,4 @@ class LeaderboardCell: UITableViewCell {
     }
     
 }
+

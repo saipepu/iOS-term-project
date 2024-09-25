@@ -21,6 +21,8 @@ class BaseTabController: UITabBarController {
              UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
         
         let homeVC = HomeViewController()
+//                let homeVC = DetailViewController()
+//            let homeVC = SignInViewController()
         homeVC.tabBarItem = UITabBarItem(title: nil, image: UIImage(named: Constants.home), selectedImage: nil)
         
         
