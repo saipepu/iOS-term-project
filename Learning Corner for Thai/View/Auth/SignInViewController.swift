@@ -36,6 +36,8 @@ class SignInViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        print("SignInViewController")
         
         userName.text = user?.displayName
         
