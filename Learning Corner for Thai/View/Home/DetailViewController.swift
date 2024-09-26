@@ -69,8 +69,7 @@ class DetailViewController: UIViewController {
 
     }
     
-    
-    
+
     fileprivate func navigateToQuiz() {
         let quizVC = QuizViewController()
         if let quizzes = course?.quizzes, let course = course {
