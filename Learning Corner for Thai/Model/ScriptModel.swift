@@ -10,12 +10,10 @@ import Foundation
 // MARK: - Script Model
 struct ScriptModel: Codable {
     let speaker: String
-    let content: String
+//    let content: String
     let audioFile: String
     let _id: String
     let words: [Word]
-    
-  
 }
 
 // MARK: - Word Model

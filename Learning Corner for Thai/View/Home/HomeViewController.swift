@@ -16,6 +16,7 @@ class HomeViewController: UIViewController {
     private let usersVM : GetAllUserViewModel
 //    private let courses = CourseMock.instance.courses
     private let coursesVM : GetCourseViewModel
+//    private let currentUserVM : GetUserByUserIdViewModel
     
     // for fetching current user
     //let currentUserVM = GetUserByUserIdViewModel.instance
@@ -78,6 +79,7 @@ class HomeViewController: UIViewController {
         label.applySecondaryLabelColor()
         label.text = "Hey, Pepu"
         label.numberOfLines = 1
+        label.textColor = .black
         label.textAlignment = .left
         return label
     }()
@@ -146,6 +148,17 @@ class HomeViewController: UIViewController {
         return label
     }()
     
+    
+    private let testString : UILabel = {
+        let label = UILabel()
+        label.applyHeadingFont()
+        label.applyPrimaryLabelColor()
+        label.text = ""
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .left
+        return label
+    }()
+    
     private var tableView : UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -165,24 +178,12 @@ class HomeViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+ 
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         print("HomeViewController loaded")
-        self.usersVM.onUsersUpdated = {
-            DispatchQueue.main.async {
-                print("Fetched users: \(self.usersVM.userData)") 
-               self.tableView.reloadData()
-            }
-        }
-        self.coursesVM.onCoursesUpdate = {
-            DispatchQueue.main.async {
-                print("Fetched courses: \(self.coursesVM.courseData)")
-               self.collectionView.reloadData()
-            }
-        }
         
         
         view.backgroundColor = .white
@@ -194,9 +195,10 @@ class HomeViewController: UIViewController {
         collectionView.register(CourseCell.self, forCellWithReuseIdentifier: Constants.courseCellIdentifier)
         setUpUI()
         setUpConstraints()
-        self.tableView.reloadData()
-        collectionView.reloadData()
-
+        
+     
+  
+        
     }
     
 
@@ -205,7 +207,6 @@ class HomeViewController: UIViewController {
     
     //MARK: - Set Up UI
     fileprivate func setUpUI() {
-        print(tableView.frame)
    
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         courseCell.translatesAutoresizingMaskIntoConstraints = false
@@ -222,6 +223,23 @@ class HomeViewController: UIViewController {
         contentView.addSubview(collectionView)
         contentView.addSubview(leaderboardHeading)
         contentView.addSubview(tableView)
+        contentView.addSubview(testString)
+        view.layoutIfNeeded()
+
+        self.usersVM.onUsersUpdated = {
+            DispatchQueue.main.async {
+                print("Fetched users: \(self.usersVM.userData)")
+               self.tableView.reloadData()
+            }
+        }
+        self.coursesVM.onCoursesUpdate = {
+            DispatchQueue.main.async {
+//                print("Fetched courses: \(self.coursesVM.courseData)")
+               self.collectionView.reloadData()
+            }
+        }
+        
+        nameCalloutLabel.text = usersVM.userData?.first?.name
         
     }
     
@@ -230,9 +248,7 @@ class HomeViewController: UIViewController {
         
         
         
-//        if let users = allUsersVM.userData {
-//            let tableViewHeight = CGFloat(users.count * 50) // 50 is the row height
-            
+
         if let users = usersVM.userData {
             let tableViewHeight = CGFloat(  users.count * 50) // 50 is the row height
             
@@ -244,7 +260,7 @@ class HomeViewController: UIViewController {
                 scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                 scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                 scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
-                scrollView.heightAnchor.constraint(equalTo: view.layoutMarginsGuide.heightAnchor),
+//                scrollView.heightAnchor.constraint(equalTo: view.layoutMarginsGuide.heightAnchor),
                 
                 // Contnet View of the Scroll View Constraints
                 contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
@@ -262,7 +278,7 @@ class HomeViewController: UIViewController {
                 switchRoleButton.heightAnchor.constraint(equalToConstant: 65),
                 
                 // Header Row Constraints
-                headerHStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
+                headerHStack.topAnchor.constraint(equalTo: contentView.topAnchor),
                 headerHStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
                 headerHStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
                 
@@ -299,12 +315,16 @@ class HomeViewController: UIViewController {
                 
                 // Table View Constraints
                 tableView.topAnchor.constraint(equalTo: leaderboardHeading.bottomAnchor, constant: 12),
-                tableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-                tableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-                tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,constant: -12),
-                tableView.heightAnchor.constraint(equalToConstant: tableViewHeight)
-                
-            ])
+                  tableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+                  tableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+//                  tableView.heightAnchor.constraint(equalToConstant: tableViewHeight),
+//                  tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -24),
+
+                testString.topAnchor.constraint(equalTo: tableView.bottomAnchor,constant: 24),
+                testString.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+                testString.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,constant: -24)
+                ])
+              
             
         }
     }
@@ -382,11 +402,10 @@ extension HomeViewController : UICollectionViewDelegateFlowLayout,UICollectionVi
         
         
         let course = coursesVM.courseData?[indexPath.row]
-        let quizVC = QuizViewController()
-              
-        if let quizzez = course?.quizzes {
-            quizVC.configure(quizzez: quizzez)
-            navigationController?.pushViewController(quizVC, animated: true)
+        let detailVC = DetailViewController()
+        if let course = course {
+            detailVC.configure(course: course)
+            navigationController?.pushViewController(detailVC, animated: true)
         }
     }
     

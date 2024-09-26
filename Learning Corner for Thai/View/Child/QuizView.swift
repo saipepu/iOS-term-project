@@ -9,6 +9,8 @@ import UIKit
 // 4. if false, chagne the bg of selecteRow to red and the option with correct ans to be green
 // 5. after that the button will change to next and increment the index
 
+// 6. make calculate function that accepts array of quiz index, and final socre
+
 
 
 
@@ -17,10 +19,13 @@ import UIKit
 class QuizView: UIView {
 
     let optionRow : ReusableOptionRow? = nil
-    
+    var updateScoreVM : UpdateScoreViewModel? = nil
     var quizzez : [QuizModel]?
     var quizQuestionIndex = 0
     var quiz: QuizModel? = nil
+    var finalScore = 0
+    var courseExp = 0
+
     private var selectedOptionRow: ReusableOptionRow? // Track the selected row
     var correctAnswer : OptionModel? = nil
     private var selectedOption: OptionModel?
@@ -85,9 +90,9 @@ class QuizView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public func configure(quizzez: [QuizModel]) {
+    public func configure(quizzez: [QuizModel], courseExp: Int) {
         self.quizzez = quizzez
-        
+        self.courseExp = courseExp
         selectedOptionRow = nil
           correctAnswer = nil
         
@@ -167,6 +172,14 @@ class QuizView: UIView {
     }
     
     @objc func submitPressed() {
+        
+        
+        if let quizCount = quizzez?.count , quizQuestionIndex == quizCount - 1 {
+            //here
+            print("this func is called")
+            updateUserDetail()
+        }
+        
         guard let selectedRow = selectedOptionRow, let selectedOption = selectedOption else {
                 print("No option selected.")
                 return
@@ -175,6 +188,8 @@ class QuizView: UIView {
         // Switch the buttons
             submitButton.isHidden = true
             nextButton.isHidden = false
+        
+     
         
     }
     
@@ -190,13 +205,17 @@ class QuizView: UIView {
         print(quizQuestionIndex)
 
 
-        let nextQuiz = quizzez[quizQuestionIndex]
+//        let nextQuiz = quizzez[quizQuestionIndex]
 //        configure(quiz: nextQuiz)
-        configure(quizzez: quizzez)
+        configure(quizzez: quizzez, courseExp: courseExp)
         // Switch back the buttons
         nextButton.isHidden = true
         submitButton.isHidden = false
     }
+    
+    
+    
+    
     
     /*
      if quizQuestionIndex < totalQuestions - 1 {
@@ -207,21 +226,33 @@ class QuizView: UIView {
              }
      */
     private func checkAnswer(selectedRow: ReusableOptionRow,option : OptionModel) {
-        guard let correctAnswer = correctAnswer else { return }
+        guard let correctAnswer = correctAnswer, let point = quiz?.point else { return }
         print("You choose \(option.content) and correctAnswer is \(correctAnswer.content)")
         if correctAnswer._id == option._id {
             selectedRow.isCorrect = true
-       
+            finalScore += point
         } else { // correctAnswer.content != option.content
             selectedRow.isCorrect = false
             correctOptionRow?.isCorrect = true
         }
         
+    
         quizStack.arrangedSubviews.forEach { view in
                if let optionRow = view as? ReusableOptionRow {
                    optionRow.isUserInteractionEnabled = false // Disable user interaction after submission
                }
            }
+    }
+    
+    
+    private func updateUserDetail() {
+        if let updateScoreVM = updateScoreVM {
+            UpdateScoreViewModel(point: finalScore, exp: courseExp)
+            updateScoreVM.exp = courseExp
+            updateScoreVM.point = finalScore
+            updateScoreVM.updateScore(userId: "66f46218075c041d3fde45cb")
+            print("User updated")
+        }
     }
     
     private func updateProgress() {

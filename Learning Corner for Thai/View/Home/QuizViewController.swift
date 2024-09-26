@@ -5,6 +5,7 @@ class QuizViewController: UIViewController {
     //MARK: - Variables
     var quizzez: [QuizModel]? = nil
     var quizView: QuizView?
+    var course : CourseModel2? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -17,8 +18,9 @@ class QuizViewController: UIViewController {
     
     
     //MARK: - Inject Data
-    public func configure(quizzez : [QuizModel]) {
+    public func configure(quizzez : [QuizModel], course : CourseModel2) {
         self.quizzez = quizzez
+        self.course = course
     }
     
     
@@ -27,8 +29,8 @@ class QuizViewController: UIViewController {
     fileprivate func setUpUI() {
         quizView = QuizView()
  
-        if let quizView = quizView, let quizzez = quizzez {
-                quizView.configure(quizzez: quizzez)
+        if let quizView = quizView, let quizzez = quizzez, let exp = course?.exp {
+            quizView.configure(quizzez: quizzez, courseExp: exp)
             
             view.addSubview(quizView)
             quizView.translatesAutoresizingMaskIntoConstraints = false

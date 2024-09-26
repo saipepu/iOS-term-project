@@ -10,12 +10,21 @@ import Foundation
 class GetUserByUserIdViewModel : ObservableObject {
 
     
-    static let instance = GetUserByUserIdViewModel()
-    private init() { }
+    private(set) var userDetail: UserModel? = nil {
+               didSet {
+                   self.onUserUpdated?()
+               }
+           }
     
-    @Published var userDetail: UserModel? = nil
-    @Published var errorMessage: String? = nil
+    var onUserUpdated: (()->Void)?
+
+  var errorMessage: String? = nil
      
+    
+    
+    init(id:String) {
+        getOneUserById(id:id)
+    }
      func getOneUserById(id: String) {
          errorMessage = nil
          let getOneUser = GetUserById(id: id)

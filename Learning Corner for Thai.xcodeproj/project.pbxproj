@@ -30,12 +30,18 @@
 		B7A9A45D2CA3156600737F5D /* QuizMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7A9A45C2CA3156600737F5D /* QuizMock.swift */; };
 		B7A9A4632CA31F1600737F5D /* ReusableOptionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7A9A4622CA31F1600737F5D /* ReusableOptionRow.swift */; };
 		B7A9A4652CA3217800737F5D /* OptionMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7A9A4642CA3217800737F5D /* OptionMock.swift */; };
+		B7B69CB52CA56CA40067A976 /* DetailViewDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7B69CB42CA56CA40067A976 /* DetailViewDraft.swift */; };
+		B7B69CB72CA56CCE0067A976 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7B69CB62CA56CCE0067A976 /* DetailViewController.swift */; };
+		B7B69CB92CA58B6B0067A976 /* ReusableButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7B69CB82CA58B6B0067A976 /* ReusableButton.swift */; };
+		B7BF307B2CA5E55C00DAF64C /* UpdateScoreDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BF307A2CA5E55C00DAF64C /* UpdateScoreDTO.swift */; };
+		B7BF307D2CA5E5D700DAF64C /* UpdateScoreEndPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BF307C2CA5E5D700DAF64C /* UpdateScoreEndPoint.swift */; };
+		B7BF30802CA5E63300DAF64C /* UpdateScoreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BF307F2CA5E63300DAF64C /* UpdateScoreViewModel.swift */; };
 		B7C3B61E2CA48F7600A2677D /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7C3B61D2CA48F7600A2677D /* UserModel.swift */; };
 		B7C3B6202CA4908E00A2677D /* AssetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7C3B61F2CA4908E00A2677D /* AssetModel.swift */; };
 		B7C3B6222CA4923A00A2677D /* UserMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7C3B6212CA4923A00A2677D /* UserMock.swift */; };
 		B7C3B6242CA4928200A2677D /* AssetMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7C3B6232CA4928200A2677D /* AssetMock.swift */; };
 		B7C3B6272CA497BA00A2677D /* GetUserById.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7C3B6262CA497BA00A2677D /* GetUserById.swift */; };
-		B7C3B6292CA4982900A2677D /* GetUserByUserId.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7C3B6282CA4982900A2677D /* GetUserByUserId.swift */; };
+		B7C3B6292CA4982900A2677D /* GetUserByUserIdViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7C3B6282CA4982900A2677D /* GetUserByUserIdViewModel.swift */; };
 		B7C3B62B2CA49BEE00A2677D /* GetAllUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7C3B62A2CA49BEE00A2677D /* GetAllUser.swift */; };
 		B7C3B62D2CA49C7C00A2677D /* GetAllUserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7C3B62C2CA49C7C00A2677D /* GetAllUserViewModel.swift */; };
 		B7C3B62F2CA4AEB700A2677D /* ScriptModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7C3B62E2CA4AEB700A2677D /* ScriptModel.swift */; };
@@ -80,12 +86,18 @@
 		B7A9A45C2CA3156600737F5D /* QuizMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizMock.swift; sourceTree = "<group>"; };
 		B7A9A4622CA31F1600737F5D /* ReusableOptionRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableOptionRow.swift; sourceTree = "<group>"; };
 		B7A9A4642CA3217800737F5D /* OptionMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionMock.swift; sourceTree = "<group>"; };
+		B7B69CB42CA56CA40067A976 /* DetailViewDraft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewDraft.swift; sourceTree = "<group>"; };
+		B7B69CB62CA56CCE0067A976 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
+		B7B69CB82CA58B6B0067A976 /* ReusableButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableButton.swift; sourceTree = "<group>"; };
+		B7BF307A2CA5E55C00DAF64C /* UpdateScoreDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateScoreDTO.swift; sourceTree = "<group>"; };
+		B7BF307C2CA5E5D700DAF64C /* UpdateScoreEndPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateScoreEndPoint.swift; sourceTree = "<group>"; };
+		B7BF307F2CA5E63300DAF64C /* UpdateScoreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateScoreViewModel.swift; sourceTree = "<group>"; };
 		B7C3B61D2CA48F7600A2677D /* UserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserModel.swift; sourceTree = "<group>"; };
 		B7C3B61F2CA4908E00A2677D /* AssetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetModel.swift; sourceTree = "<group>"; };
 		B7C3B6212CA4923A00A2677D /* UserMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMock.swift; sourceTree = "<group>"; };
 		B7C3B6232CA4928200A2677D /* AssetMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetMock.swift; sourceTree = "<group>"; };
 		B7C3B6262CA497BA00A2677D /* GetUserById.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetUserById.swift; sourceTree = "<group>"; };
-		B7C3B6282CA4982900A2677D /* GetUserByUserId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetUserByUserId.swift; sourceTree = "<group>"; };
+		B7C3B6282CA4982900A2677D /* GetUserByUserIdViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetUserByUserIdViewModel.swift; sourceTree = "<group>"; };
 		B7C3B62A2CA49BEE00A2677D /* GetAllUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetAllUser.swift; sourceTree = "<group>"; };
 		B7C3B62C2CA49C7C00A2677D /* GetAllUserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetAllUserViewModel.swift; sourceTree = "<group>"; };
 		B7C3B62E2CA4AEB700A2677D /* ScriptModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptModel.swift; sourceTree = "<group>"; };
@@ -150,6 +162,7 @@
 		B72D38B62C805B4B00B90BEB /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				B7BF30792CA5E54A00DAF64C /* DTO */,
 				B7DD9E442C81F9D100B777F7 /* LeaderboardModel.swift */,
 				B7DD9E4C2C83760400B777F7 /* CourseModel.swift */,
 				B7DD9E4E2C83768200B777F7 /* GlossaryModel.swift */,
@@ -178,6 +191,7 @@
 		B72D38B82C805B5600B90BEB /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				B7BF307E2CA5E62700DAF64C /* Score */,
 				B7C3B6332CA4B0CD00A2677D /* User */,
 				B7C3B6322CA4B0C700A2677D /* Course */,
 				B72D38C92C805BFB00B90BEB /* MyViewModel.swift */,
@@ -205,6 +219,7 @@
 				B72D38BA2C805B8100B90BEB /* HomeViewController.swift */,
 				B7A9A4522CA3124300737F5D /* QuizViewController.swift */,
 				B7C3B6362CA4B47600A2677D /* RewardViewController.swift */,
+				B7B69CB62CA56CCE0067A976 /* DetailViewController.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -232,6 +247,7 @@
 				B7DD9E482C8264CF00B777F7 /* CourseCell.swift */,
 				B7DD9E4A2C83173A00B777F7 /* ReusableSearchBar.swift */,
 				B7A9A4622CA31F1600737F5D /* ReusableOptionRow.swift */,
+				B7B69CB82CA58B6B0067A976 /* ReusableButton.swift */,
 			);
 			path = ReusableComponents;
 			sourceTree = "<group>";
@@ -266,6 +282,7 @@
 				B7C3B6262CA497BA00A2677D /* GetUserById.swift */,
 				B7C3B62A2CA49BEE00A2677D /* GetAllUser.swift */,
 				B7C3B6302CA4B06D00A2677D /* GetAllCourses.swift */,
+				B7BF307C2CA5E5D700DAF64C /* UpdateScoreEndPoint.swift */,
 			);
 			path = Helper;
 			sourceTree = "<group>";
@@ -283,8 +300,25 @@
 			children = (
 				B7A9A4562CA3127A00737F5D /* QuizView.swift */,
 				B74D4A9D2CA4C1DE0032FCB2 /* ProfileView.swift */,
+				B7B69CB42CA56CA40067A976 /* DetailViewDraft.swift */,
 			);
 			path = Child;
+			sourceTree = "<group>";
+		};
+		B7BF30792CA5E54A00DAF64C /* DTO */ = {
+			isa = PBXGroup;
+			children = (
+				B7BF307A2CA5E55C00DAF64C /* UpdateScoreDTO.swift */,
+			);
+			path = DTO;
+			sourceTree = "<group>";
+		};
+		B7BF307E2CA5E62700DAF64C /* Score */ = {
+			isa = PBXGroup;
+			children = (
+				B7BF307F2CA5E63300DAF64C /* UpdateScoreViewModel.swift */,
+			);
+			path = Score;
 			sourceTree = "<group>";
 		};
 		B7C3B6322CA4B0C700A2677D /* Course */ = {
@@ -298,7 +332,7 @@
 		B7C3B6332CA4B0CD00A2677D /* User */ = {
 			isa = PBXGroup;
 			children = (
-				B7C3B6282CA4982900A2677D /* GetUserByUserId.swift */,
+				B7C3B6282CA4982900A2677D /* GetUserByUserIdViewModel.swift */,
 				B7C3B62C2CA49C7C00A2677D /* GetAllUserViewModel.swift */,
 			);
 			path = User;
@@ -379,8 +413,9 @@
 			files = (
 				B7DD9E4B2C83173A00B777F7 /* ReusableSearchBar.swift in Sources */,
 				B72D38C22C805BA600B90BEB /* ProfileViewController.swift in Sources */,
+				B7B69CB52CA56CA40067A976 /* DetailViewDraft.swift in Sources */,
 				B72D38D22C805C8C00B90BEB /* Constants.swift in Sources */,
-				B7C3B6292CA4982900A2677D /* GetUserByUserId.swift in Sources */,
+				B7C3B6292CA4982900A2677D /* GetUserByUserIdViewModel.swift in Sources */,
 				B7FF86732C846FF800348538 /* BaseTabBarController.swift in Sources */,
 				B72D38CA2C805BFB00B90BEB /* MyViewModel.swift in Sources */,
 				B7DD9E532C8377F600B777F7 /* GlossaryMock.swift in Sources */,
@@ -389,9 +424,11 @@
 				B72D38C02C805B9F00B90BEB /* LeaderboardViewController.swift in Sources */,
 				B7C3B6242CA4928200A2677D /* AssetMock.swift in Sources */,
 				B7C3B6372CA4B47600A2677D /* RewardViewController.swift in Sources */,
+				B7BF307B2CA5E55C00DAF64C /* UpdateScoreDTO.swift in Sources */,
 				B7DD9E412C81F57500B777F7 /* LeaderboardCell.swift in Sources */,
 				B7DD9E512C8377BF00B777F7 /* CourseMock.swift in Sources */,
 				B72D38A52C805B4700B90BEB /* SceneDelegate.swift in Sources */,
+				B7BF30802CA5E63300DAF64C /* UpdateScoreViewModel.swift in Sources */,
 				B7DD9E452C81F9D100B777F7 /* LeaderboardModel.swift in Sources */,
 				B7C3B62B2CA49BEE00A2677D /* GetAllUser.swift in Sources */,
 				B7A9A4572CA3127A00737F5D /* QuizView.swift in Sources */,
@@ -403,6 +440,7 @@
 				B7C3B6272CA497BA00A2677D /* GetUserById.swift in Sources */,
 				B7C3B62F2CA4AEB700A2677D /* ScriptModel.swift in Sources */,
 				B7C3B6352CA4B0DD00A2677D /* GetCourseViewModel.swift in Sources */,
+				B7B69CB72CA56CCE0067A976 /* DetailViewController.swift in Sources */,
 				B72D38E92C80978100B90BEB /* UILabel+Extension.swift in Sources */,
 				B7C3B6202CA4908E00A2677D /* AssetModel.swift in Sources */,
 				B7A9A45D2CA3156600737F5D /* QuizMock.swift in Sources */,
@@ -413,7 +451,9 @@
 				B7C3B61E2CA48F7600A2677D /* UserModel.swift in Sources */,
 				B7C3B6222CA4923A00A2677D /* UserMock.swift in Sources */,
 				B7A9A4652CA3217800737F5D /* OptionMock.swift in Sources */,
+				B7BF307D2CA5E5D700DAF64C /* UpdateScoreEndPoint.swift in Sources */,
 				B7DD9E4D2C83760400B777F7 /* CourseModel.swift in Sources */,
+				B7B69CB92CA58B6B0067A976 /* ReusableButton.swift in Sources */,
 				B7A9A4592CA3141500737F5D /* QuizModel.swift in Sources */,
 				B7A9A4632CA31F1600737F5D /* ReusableOptionRow.swift in Sources */,
 				B72D38BB2C805B8100B90BEB /* HomeViewController.swift in Sources */,
