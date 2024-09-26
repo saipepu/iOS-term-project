@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import GoogleSignIn
 import Combine
 
 
@@ -27,6 +28,10 @@ class HomeViewController: UIViewController {
    // let coursesVM = GetCourseViewModel.instance
     private let searchBar = ReusableSearchBar()
     private let courseCell = CourseCell()
+
+    private let googleService = GoogleService()
+    
+
     //MARK: - UI Components
     
     private let scrollView : UIScrollView = {
@@ -40,8 +45,6 @@ class HomeViewController: UIViewController {
         contentView.translatesAutoresizingMaskIntoConstraints = false
         return contentView
     }()
-    
-    
     
     private let profileImageView : UIImageView = {
         let profileImageView = UIImageView()
@@ -312,7 +315,11 @@ class HomeViewController: UIViewController {
     //MARK: - Set Up Actions
     @objc fileprivate func roleSwitched() {
         print("Role is switched")
+
+        googleService.signOutWithGoogle()
+
         tableView.reloadData()
+
     }
     
     @objc fileprivate func seeAllClicked() {
