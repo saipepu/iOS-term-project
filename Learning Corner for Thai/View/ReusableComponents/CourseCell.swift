@@ -10,7 +10,7 @@ import UIKit
 class CourseCell:  UICollectionViewCell {
     
     //MARK: - Variables
-    private (set) var course : CourseModel?
+    private (set) var course : CourseModel2?
 
     
     //MARK: - UI Components
@@ -61,12 +61,15 @@ class CourseCell:  UICollectionViewCell {
     }
     
     //MARK: - Data Receiver from Parent View
-    public func configure(course : CourseModel) {
+    public func configure(course : CourseModel2) {
         self.course = course
         //injecting model instance
-        self.courseImageView.image = UIImage(named: course.courseImage)
-        self.courseName.text = course.courseName
-        self.coursePoint.text = "\(course.coursePoints) XP"
+        self.courseImageView.image = UIImage(named: course.photo)
+        self.courseName.text = course.title
+        self.coursePoint.text = "\(course.exp) XP"
+//        self.courseImageView.image = UIImage(named: course.courseImage)
+//        self.courseName.text = course.courseName
+//        self.coursePoint.text = "\(course.coursePoints) XP"
     }
     
     
@@ -91,7 +94,6 @@ class CourseCell:  UICollectionViewCell {
             
             courseImageView.widthAnchor.constraint(equalToConstant: 164),
             courseImageView.heightAnchor.constraint(equalToConstant: 120),
-            
         ])
     }
     

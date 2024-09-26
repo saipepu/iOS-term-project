@@ -36,4 +36,5 @@ struct Theme {
     static let lightTint = "ThemeLightTint"
     static let primaryLabel = "ThemePrimaryLabel"
     static let secondaryLabel = "ThemeSecondaryLabel"
+    static let optionRowBG = "OptionRow"
 }

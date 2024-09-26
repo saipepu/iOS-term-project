@@ -15,6 +15,29 @@ struct CourseModel : Codable,Identifiable {
     let coursePoints : Int
     let courseVideo : String
     let glossaries : [GlossaryModel]    
+    
+    
+    
+}
+
+
+struct CourseResponse : Codable {
+    let success : Bool
+    let message : [CourseModel2]
+}
+
+
+struct CourseModel2: Codable {
+    let _id: String
+    let title: String
+    let description: String
+    let photo: String
+    let exp: Int
+    let difficulty: String
+    let quizzes: [QuizModel]
+    let script: [ScriptModel]
+    
+   
 }
 
 
