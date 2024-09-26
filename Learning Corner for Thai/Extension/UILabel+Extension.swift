@@ -14,7 +14,12 @@ extension UILabel {
         self.font = UIFont(name: Theme.headingFont, size: CGFloat(Theme.headingSize))
         self.textColor = UIColor.black
      }
-     
+    
+    func applySubHeadingFont() {
+        self.font = UIFont(name: Theme.headingFont, size: CGFloat(Theme.bodySize))
+        self.textColor = UIColor.black
+    }
+    
      func applyBodyFont() {
          self.font = UIFont(name: Theme.bodyFont, size: CGFloat(Theme.bodySize))
          self.textColor = UIColor.darkGray
@@ -24,4 +29,13 @@ extension UILabel {
          self.font = UIFont(name: Theme.labelFont, size: CGFloat(Theme.labelSize))
          self.textColor = UIColor.gray
      }
+    
+    func applyPrimaryLabelColor() {
+        self.textColor = .themePrimaryLabel
+       }
+    
+    func applySecondaryLabelColor() {
+        self.textColor = .themeSecondaryLabel
+    }
+    
 }
