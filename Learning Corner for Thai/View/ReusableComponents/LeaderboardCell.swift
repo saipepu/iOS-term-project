@@ -11,7 +11,7 @@ class LeaderboardCell: UITableViewCell {
     
     //MARK: - UI Components
     private var indexPath : IndexPath?
-    private (set) var leaderboardStats : LeaderboardModel?
+    private (set) var user : UserModel?
 
     
     //MARK: - UI Components
@@ -66,13 +66,14 @@ class LeaderboardCell: UITableViewCell {
     }
     
     //MARK: - Data Receiver from Parent View
-    public func configure(at indexPath:IndexPath, leaderboardStats : LeaderboardModel) {
+    public func configure(at indexPath:IndexPath, user : UserModel) {
         self.indexPath = indexPath
-        self.leaderboardStats = leaderboardStats
+        self.user = user
         //injecting model instance
-        self.profileImageView = UIImageView(image: UIImage(named: leaderboardStats.profileImage))
-        self.userName.text = leaderboardStats.name
-        self.scoreLabel.text = "\(leaderboardStats.score)"
+        self.profileImageView.image = UIImage(named: "profile_1")!
+        self.userName.text = user.name
+        self.scoreLabel.text = "\(user.point ?? 0)"
+        
     }
     
     
@@ -89,7 +90,7 @@ class LeaderboardCell: UITableViewCell {
         
         let scoreHStack = UIStackView(arrangedSubviews: [starImage,scoreLabel])
         scoreHStack.axis = .horizontal
-        scoreHStack.distribution = .fill
+        scoreHStack.distribution = .fillProportionally
         scoreHStack.spacing = 16
         scoreHStack.alignment = .center
         scoreHStack.translatesAutoresizingMaskIntoConstraints = false
@@ -101,9 +102,11 @@ class LeaderboardCell: UITableViewCell {
             nameHStack.centerYAnchor.constraint(equalTo: self.centerYAnchor),
             scoreHStack.centerYAnchor.constraint(equalTo: self.centerYAnchor),
             nameHStack.leadingAnchor.constraint(equalTo: self.layoutMarginsGuide.leadingAnchor, constant: 32),
-            scoreHStack.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor,constant: -21)
+            scoreHStack.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor,constant: -21),
             
-            
+            profileImageView.widthAnchor.constraint(equalTo: self.heightAnchor,multiplier: 0.75),
+            profileImageView.heightAnchor.constraint(equalTo: self.heightAnchor,multiplier: 0.75)
+
             
 //            userName.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 12),
 //            scoreLabel.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor),

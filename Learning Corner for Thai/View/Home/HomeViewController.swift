@@ -7,18 +7,31 @@
 
 import UIKit
 import GoogleSignIn
+import Combine
+
 
 class HomeViewController: UIViewController {
     
     //MARK: - Variables
-    //replace with fetched data from API
-    private let leaderboardStats = LeaderboardMock.instance.leaderboardPeople
-    private let courses = CourseMock.instance.courses
+//    private let leaderboardStats = UserMock.shared.users
+    private let usersVM : GetAllUserViewModel
+//    private let courses = CourseMock.instance.courses
+    private let coursesVM : GetCourseViewModel
     
+    // for fetching current user
+    //let currentUserVM = GetUserByUserIdViewModel.instance
+    
+    // for displaying all users in leaderboard
+   // let allUsersVM = GetAllUserViewModel.instance
+    
+    // for fetching courses
+   // let coursesVM = GetCourseViewModel.instance
     private let searchBar = ReusableSearchBar()
     private let courseCell = CourseCell()
+
     private let googleService = GoogleService()
     
+
     //MARK: - UI Components
     
     private let scrollView : UIScrollView = {
@@ -142,9 +155,39 @@ class HomeViewController: UIViewController {
         return tableView
     }()
     
-    //MARK: - Lifecycle Methods
+
+    //MARK: -Lifecycle Methods
+
+    init(usersVM: GetAllUserViewModel, coursesVM : GetCourseViewModel ) {
+            self.usersVM = usersVM
+            self.coursesVM = coursesVM
+            super.init(nibName: nil, bundle: nil)
+        }
+  
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("HomeViewController loaded")
+        self.usersVM.onUsersUpdated = {
+            DispatchQueue.main.async {
+                print("Fetched users: \(self.usersVM.userData)") 
+               self.tableView.reloadData()
+            }
+        }
+        self.coursesVM.onCoursesUpdate = {
+            DispatchQueue.main.async {
+                print("Fetched courses: \(self.coursesVM.courseData)")
+               self.collectionView.reloadData()
+            }
+        }
+        
+        
         view.backgroundColor = .white
         tableView.delegate = self
         tableView.dataSource = self
@@ -154,17 +197,19 @@ class HomeViewController: UIViewController {
         collectionView.register(CourseCell.self, forCellWithReuseIdentifier: Constants.courseCellIdentifier)
         setUpUI()
         setUpConstraints()
+        self.tableView.reloadData()
         collectionView.reloadData()
 
     }
+    
+
     
     
     
     //MARK: - Set Up UI
     fileprivate func setUpUI() {
-        
+        print(tableView.frame)
    
-        
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         courseCell.translatesAutoresizingMaskIntoConstraints = false
         collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -188,89 +233,93 @@ class HomeViewController: UIViewController {
         
         
         
-        
-        
-        let tableViewHeight = CGFloat(leaderboardStats.count * 50) // 50 is the row height
-        
-        
-        
-        NSLayoutConstraint.activate([
+//        if let users = allUsersVM.userData {
+//            let tableViewHeight = CGFloat(users.count * 50) // 50 is the row height
             
-            // Scroll View Constraints
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            scrollView.heightAnchor.constraint(equalTo: view.layoutMarginsGuide.heightAnchor),
+        if let users = usersVM.userData {
+            let tableViewHeight = CGFloat(  users.count * 50) // 50 is the row height
             
-            // Contnet View of the Scroll View Constraints
-            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            NSLayoutConstraint.activate([
+                
+                // Scroll View Constraints
+                scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+                scrollView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
+                scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+                scrollView.heightAnchor.constraint(equalTo: view.layoutMarginsGuide.heightAnchor),
+                
+                // Contnet View of the Scroll View Constraints
+                contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+                contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+                contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+                contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+                contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+                
+                // Profile Image Size Constraints
+                profileImageView.widthAnchor.constraint(equalToConstant: 65),
+                profileImageView.heightAnchor.constraint(equalToConstant: 65),
+                
+                // Switch Role Button Size Constraints
+                switchRoleButton.widthAnchor.constraint(equalToConstant: 65),
+                switchRoleButton.heightAnchor.constraint(equalToConstant: 65),
+                
+                // Header Row Constraints
+                headerHStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
+                headerHStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
+                headerHStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
+                
+                // Name Label Constraints
+                nameCalloutLabel.topAnchor.constraint(equalTo: headerHStack.bottomAnchor,constant: 32),
+                nameCalloutLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
+                
+                // Welcome Label Constraints
+                welcomeText.topAnchor.constraint(equalTo: nameCalloutLabel.bottomAnchor, constant: 4),
+                welcomeText.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
+                welcomeText.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
+                
+                // Search Bar Constraints
+                searchBar.topAnchor.constraint(equalTo: welcomeText.bottomAnchor, constant: 32),
+                searchBar.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
+                searchBar.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
+                searchBar.heightAnchor.constraint(equalToConstant: 50),
+                
+                //Course Heading HStackConstarints
+                courseHeadingHStack.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 32),
+                courseHeadingHStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
+                courseHeadingHStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
+                
+                // Collection View Constraints
+                collectionView.topAnchor.constraint(equalTo: courseHeadingHStack.bottomAnchor, constant: 12),
+                collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+                collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+                collectionView.heightAnchor.constraint(equalToConstant: 220),
+                
+                
+                // Leaderboard Heading Constraints
+                leaderboardHeading.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 32),
+                leaderboardHeading.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
+                
+                // Table View Constraints
+                tableView.topAnchor.constraint(equalTo: leaderboardHeading.bottomAnchor, constant: 12),
+                tableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+                tableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+                tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,constant: -12),
+                tableView.heightAnchor.constraint(equalToConstant: tableViewHeight)
+                
+            ])
             
-            // Profile Image Size Constraints
-            profileImageView.widthAnchor.constraint(equalToConstant: 65),
-            profileImageView.heightAnchor.constraint(equalToConstant: 65),
-            
-            // Switch Role Button Size Constraints
-            switchRoleButton.widthAnchor.constraint(equalToConstant: 65),
-            switchRoleButton.heightAnchor.constraint(equalToConstant: 65),
-            
-            // Header Row Constraints
-            headerHStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
-            headerHStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
-            headerHStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
-            
-            // Name Label Constraints
-            nameCalloutLabel.topAnchor.constraint(equalTo: headerHStack.bottomAnchor,constant: 32),
-            nameCalloutLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
-            
-            // Welcome Label Constraints
-            welcomeText.topAnchor.constraint(equalTo: nameCalloutLabel.bottomAnchor, constant: 4),
-            welcomeText.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
-            welcomeText.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
-            
-            // Search Bar Constraints
-            searchBar.topAnchor.constraint(equalTo: welcomeText.bottomAnchor, constant: 32),
-            searchBar.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
-            searchBar.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
-            searchBar.heightAnchor.constraint(equalToConstant: 50),
-            
-            //Course Heading HStackConstarints
-            courseHeadingHStack.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 32),
-            courseHeadingHStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
-            courseHeadingHStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
-        
-            // Collection View Constraints
-            collectionView.topAnchor.constraint(equalTo: courseHeadingHStack.bottomAnchor, constant: 12),
-             collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-             collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-             collectionView.heightAnchor.constraint(equalToConstant: 220),
-            
-            
-            // Leaderboard Heading Constraints
-            leaderboardHeading.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 32),
-            leaderboardHeading.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
-            
-            // Table View Constraints
-            tableView.topAnchor.constraint(equalTo: leaderboardHeading.bottomAnchor, constant: 12),
-            tableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,constant: -12),
-            tableView.heightAnchor.constraint(equalToConstant: tableViewHeight)
-            
-        ])
-        
-        
+        }
     }
     
     //MARK: - Set Up Actions
     @objc fileprivate func roleSwitched() {
         print("Role is switched")
+
         googleService.signOutWithGoogle()
+
+        tableView.reloadData()
+
     }
     
     @objc fileprivate func seeAllClicked() {
@@ -282,14 +331,24 @@ class HomeViewController: UIViewController {
 //MARK: - Table View Delegate and Data Source Methods
 extension HomeViewController : UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return leaderboardStats.count
+        guard let allUsers = usersVM.userData else {
+            print("No users found")
+            return 0
+        }
+        print("Number of users: \(allUsers.count)") // Debugging log
+        return allUsers.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Constants.leaderboardCellIdentifier, for: indexPath) as! LeaderboardCell
-        cell.textLabel?.text = "\(indexPath.row+1)"
-        cell.configure(at: indexPath, leaderboardStats: leaderboardStats[indexPath.row])
-        return cell
+         
+         guard let users = usersVM.userData else { return cell }
+         
+         print("Configuring cell at row: \(indexPath.row) for user: \(users[indexPath.row])") // Debugging log
+         
+         cell.configure(at: indexPath, user: users[indexPath.row])
+         
+         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -306,12 +365,17 @@ extension HomeViewController : UISearchBarDelegate {
 extension HomeViewController : UICollectionViewDelegateFlowLayout,UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-          return courses.count
+        return coursesVM.courseData?.count ?? 0
+        print("num of courses" ,coursesVM.courseData?.count ?? 0)
+//        return courses.count
       }
       
       func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
           let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.courseCellIdentifier, for: indexPath) as! CourseCell
+          guard let courses = coursesVM.courseData else { return cell }
+          print("Configuring course cell at row: \(indexPath.row) for user: \(courses[indexPath.row])")
           cell.configure(course: courses[indexPath.row])
+//          cell.configure(course: courses[indexPath.row])
           return cell
       }
       
@@ -321,5 +385,16 @@ extension HomeViewController : UICollectionViewDelegateFlowLayout,UICollectionVi
         return CGSize(width: 180, height: 200) // Adjust as needed
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        
+        let course = coursesVM.courseData?[indexPath.row]
+        let quizVC = QuizViewController()
+              
+        if let quizzez = course?.quizzes {
+            quizVC.configure(quizzez: quizzez)
+            navigationController?.pushViewController(quizVC, animated: true)
+        }
+    }
     
 }

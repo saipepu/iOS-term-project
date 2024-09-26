@@ -9,9 +9,22 @@ import UIKit
 
 class BaseTabController: UITabBarController {
 
+    
+    private let usersVM : GetAllUserViewModel = GetAllUserViewModel()
+    private let coursesVM : GetCourseViewModel = GetCourseViewModel()
+    
+    
+
+    
+
+    
+   
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        selectedIndex = 1
+        
+        selectedIndex = 0
         tabBar.backgroundColor = .white
         tabBar.isTranslucent = false
     
@@ -20,9 +33,11 @@ class BaseTabController: UITabBarController {
              UITabBar.appearance().standardAppearance = tabBarAppearance
              UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
         
-        let homeVC = HomeViewController()
+      
 //                let homeVC = DetailViewController()
 //            let homeVC = SignInViewController()
+
+        let homeVC = HomeViewController(usersVM: usersVM, coursesVM: coursesVM)
         homeVC.tabBarItem = UITabBarItem(title: nil, image: UIImage(named: Constants.home), selectedImage: nil)
         
         

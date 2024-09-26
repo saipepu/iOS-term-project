@@ -16,6 +16,9 @@ class Constants {
     static let buyAtStoreImage = "buying_711"
     static let askDirectionImage = "ask_direction"
     static let makeFriendsImage = "making_friends"
+    
+    static let selectedOption = "checkmark.circle.fill"
+    static let option = "checkmark.circle"
 
 
     //MARK: - Tab Bar Item Images
