@@ -28,14 +28,15 @@ struct CourseResponse : Codable {
 
 
 struct CourseModel2: Codable {
-    let _id: String
-    let title: String
-    let description: String
-    let photo: String
-    let exp: Int
-    let difficulty: String
-    let quizzes: [QuizModel]
-    let script: [ScriptModel]
+    let _id: String?
+    let title: String?
+    let description: String?
+    let youtubeLink : String?
+    let photo: String?
+    let exp: Int?
+    let difficulty: String?
+    let quizzes: [QuizModel]?
+    let script: [ScriptModel]?
     
    
 }

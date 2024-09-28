@@ -37,10 +37,8 @@ class GetCourseViewModel {
                 switch result {
                 case .success(let courseData):
                     self.courseData = courseData.message
-                    print("Success getting couses \(courseData.message)")
                 case .failure(let error):
                     self.errorMessage = "Failed to get user detail by id: \(error.localizedDescription)"
-                    print(self.errorMessage)
                 }
             }
         }

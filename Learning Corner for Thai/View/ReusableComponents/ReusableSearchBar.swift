@@ -8,7 +8,15 @@
 
 import UIKit
 
-class ReusableSearchBar: UIView {
+protocol ReusableSearchBarDelegate: AnyObject {
+    func didChangeSearchText(_ searchText: String)
+    func didTapCancel()
+}
+
+class ReusableSearchBar: UIView, UITextFieldDelegate {
+    
+    weak var delegate: ReusableSearchBarDelegate?
+
     
     // MARK: - UI Components
     
@@ -20,7 +28,7 @@ class ReusableSearchBar: UIView {
         return imageView
     }()
     
-    private let textField: UITextField = {
+    public let textField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Search the conversation..."
         textField.borderStyle = .none
@@ -43,14 +51,14 @@ class ReusableSearchBar: UIView {
         super.init(frame: frame)
         setupView()
         setupConstraints()
-        setupActions()
+    
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupView()
         setupConstraints()
-        setupActions()
+       
     }
     
     // MARK: - Setup Methods
@@ -64,6 +72,12 @@ class ReusableSearchBar: UIView {
         addSubview(searchIcon)
         addSubview(textField)
         addSubview(clearButton)
+      
+        textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        clearButton.addTarget(self, action: #selector(clearButtonTapped), for: .touchUpInside)
+        textField.returnKeyType = .search // Make sure the return key is set to search
+             textField.delegate = self // Set the delegate for the text field
+        
     }
     
     private func setupConstraints() {
@@ -77,8 +91,7 @@ class ReusableSearchBar: UIView {
             searchIcon.centerYAnchor.constraint(equalTo: centerYAnchor),
             searchIcon.widthAnchor.constraint(equalToConstant: 20),
             searchIcon.heightAnchor.constraint(equalToConstant: 20),
-            
-            // Clear Button Constraints
+        // Clear Button Constraints
             clearButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
             clearButton.centerYAnchor.constraint(equalTo: centerYAnchor),
             clearButton.widthAnchor.constraint(equalToConstant: 20),
@@ -92,22 +105,22 @@ class ReusableSearchBar: UIView {
         ])
     }
     
-    private func setupActions() {
-        textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-        clearButton.addTarget(self, action: #selector(clearButtonTapped), for: .touchUpInside)
-    }
+  
     
     // MARK: - Action Methods
     
     @objc private func textFieldDidChange() {
-        clearButton.isHidden = textField.text?.isEmpty ?? true
-    }
-    
-    @objc private func clearButtonTapped() {
-        textField.text = ""
-        clearButton.isHidden = true
-        textField.resignFirstResponder()
-    }
+           clearButton.isHidden = textField.text?.isEmpty ?? true
+           // Notify delegate of the change
+           delegate?.didChangeSearchText(textField.text ?? "")
+       }
+       
+       @objc private func clearButtonTapped() {
+           textField.text = ""
+           clearButton.isHidden = true
+           textField.resignFirstResponder()
+           delegate?.didChangeSearchText("") // Notify delegate of the clear action
+       }
     
     // Public Method to Get Text
     func getSearchText() -> String? {

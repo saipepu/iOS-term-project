@@ -6,18 +6,18 @@
 //
 
 import UIKit
-import AVFoundation
+import WebKit
+
 
 class DetailView: UIView {
 
     //MARK: - Variables
     private var course : CourseModel2?
+    public var scriptView : ReusableScriptView? = nil
+    var webView: WKWebView!
+
   
-    // video player varaibles
-    var player: AVPlayer?
-    var playerItem: AVPlayerItem?
-    var playerObserver: Any?
-    
+  
     
     //MARK: UI components
     public let scrollView: UIScrollView = {
@@ -89,17 +89,18 @@ class DetailView: UIView {
 //          return progressView
 //      }()
     
-    private let audioProgressBar: UISlider = {
-           let slider = UISlider()
-           slider.translatesAutoresizingMaskIntoConstraints = false
-           slider.minimumValue = 0
-           slider.maximumValue = 1
-           slider.tintColor = .systemBlue
-           slider.value = 0
-           return slider
-       }()
+//    private let audioProgressBar: UISlider = {
+//           let slider = UISlider()
+//           slider.translatesAutoresizingMaskIntoConstraints = false
+//           slider.minimumValue = 0
+//           slider.maximumValue = 1
+//           slider.tintColor = .systemBlue
+//           slider.value = 0
+//           return slider
+//       }()
     
     
+
    
     
     
@@ -113,9 +114,9 @@ class DetailView: UIView {
     
     
     
+    
     public let courseDescription: UILabel = {
         let label = UILabel()
-//        label.text = "This lesson includes day to day greeting phrases in Thai which can be used by both male and female. The glossary is provided below. After learning the phrase, you can proceed to the quiz section to test out your knowledge.\nThis lesson includes day to day greeting phrases in Thai which can be used by both male and female. The glossary is provided below. After learning the phrase, you can proceed to the quiz section to test out your knowledge.\nThis lesson includes day to day greeting phrases in Thai which can be used by both male and female. The glossary is provided below. After learning the phrase, you can proceed to the quiz section to test out your knowledge.\nThis lesson includes day to day greeting phrases in Thai which can be used by both male and female. The glossary is provided below. After learning the phrase, you can proceed to the quiz section to test out your knowledge.\nThis lesson includes day to day greeting phrases in Thai which can be used by both male and female. The glossary is provided below. After learning the phrase, you can proceed to the quiz section to test out your knowledge. "
         label.textAlignment = .justified
         label.numberOfLines = 100
         label.applyBodyFont()
@@ -124,8 +125,27 @@ class DetailView: UIView {
     }()
     
     
-   
+    private let scriptHeading : UILabel = {
+       let label = UILabel()
+        label.text = "Conversation"
+        label.applyHeadingFont()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .left
+        return label
+    }()
 
+    public let allScriptStack : UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.distribution = .equalSpacing
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        //padding
+        stack.isLayoutMarginsRelativeArrangement = true
+        stack.layoutMargins = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24)
+        return stack
+    }()
+
+    
     /*
      let course = coursesVM.courseData?[indexPath.row]
      let detailVC = DetailViewController()
@@ -134,6 +154,7 @@ class DetailView: UIView {
          navigationController?.pushViewController(detailVC, animated: true)
      }
      */
+    
    
     
     //MARK: -Inject Data
@@ -143,32 +164,37 @@ class DetailView: UIView {
         self.courseLevel.text = course.difficulty
         self.courseImageView.image = UIImage(named: "")
         self.courseDescription.text = course.description
+        populateScripts()
+
     }
     
     
     //MARK: - Lifecycle Methods
     override init(frame: CGRect) {
         super.init(frame: frame)
+//        scriptView = ReusableScriptView()
         addSubview(scrollView)
         scrollView.addSubview(contentView)
         contentView.addSubview(courseTitle)
         contentView.addSubview(courseLevel)
-        contentView.addSubview(courseImageView)
-        contentView.addSubview(playButton)
-        contentView.addSubview(audioProgressBar)
+//        contentView.addSubview(courseImageView)
+//        contentView.addSubview(playButton)
+//        contentView.addSubview(audioProgressBar)
         contentView.addSubview(descriptionHeading)
         contentView.addSubview(courseDescription)
-     
-
-        // Position the button (for example, center it)
-      
-        setupAudioPlayer(audioURL: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3")
-
-              // Add action for the play button
-        playButton.addTarget(self, action: #selector(togglePlayPause), for: .touchUpInside)
-        audioProgressBar.addTarget(self, action: #selector(sliderValueChanged), for: .valueChanged)
+        contentView.addSubview(scriptHeading)
+        contentView.addSubview(allScriptStack)
+       
+        webView = WKWebView()
+        webView.backgroundColor = .blue
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(webView)
+        
 
     
+        loadYouTubeVideo(youtubeLink: "https://www.youtube.com/watch?v=rFy-qQaDCY8")
+        
+      
         setUpConstraints()
     }
     
@@ -176,66 +202,89 @@ class DetailView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+ 
     
-
-    
+    func loadYouTubeVideo(youtubeLink: String) {
+           // Create the YouTube embed URL
+       
+        
+           if let url = URL(string: youtubeLink) {
+               let request = URLRequest(url: url)
+               webView.load(request)
+           }
+       }
     
     //MARK: - UI Set Up
    
     
-    private func setupAudioPlayer(audioURL : String) {
-            // Create an AVPlayerItem and AVPlayer
-            guard let audioURL = URL(string: audioURL) else { return }
-            playerItem = AVPlayerItem(url: audioURL)
-            player = AVPlayer(playerItem: playerItem)
-
-            // Observe the audio duration and progress
-            addProgressObserver()
-        }
-
-    private func addProgressObserver() {
-        playerObserver = player?.addPeriodicTimeObserver(forInterval: CMTime(seconds: 1, preferredTimescale: 1), queue: .main, using: { [weak self] time in
-            guard let self = self, let duration = self.playerItem?.duration else { return }
-
-            let currentTime = CMTimeGetSeconds(time)
-            let totalTime = CMTimeGetSeconds(duration)
-
-            // Update the slider's value based on the audio's current time
-            if totalTime > 0 {
-                // Make sure to use slider's value property
-                self.audioProgressBar.value = Float(currentTime / totalTime)
+    func extractVideoID(from url: String) -> String? {
+        let pattern = "(?<=v=|/)([a-zA-Z0-9_-]{11})"
+        let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive)
+        
+        if let match = regex?.firstMatch(in: url, options: [], range: NSRange(location: 0, length: url.count)) {
+            if let range = Range(match.range(at: 1), in: url) {
+                return String(url[range])
             }
-        })
+        }
+        return nil
     }
 
+//    private func addProgressObserver() {
+//        playerObserver = player?.addPeriodicTimeObserver(forInterval: CMTime(seconds: 1, preferredTimescale: 1), queue: .main, using: { [weak self] time in
+//            guard let self = self, let duration = self.playerItem?.duration else { return }
+//
+//            let currentTime = CMTimeGetSeconds(time)
+//            let totalTime = CMTimeGetSeconds(duration)
+//
+//            // Update the slider's value based on the audio's current time
+//            if totalTime > 0 {
+//                // Make sure to use slider's value property
+//                self.audioProgressBar.value = Float(currentTime / totalTime)
+//            }
+//        })
+//    }
 
-        @objc private func togglePlayPause() {
-            if player?.timeControlStatus == .paused {
-                player?.play()
-                playButton.setImage(UIImage(systemName: "pause.fill"), for: .normal) // Change to pause icon
-            } else {
-                player?.pause()
-                playButton.setImage(UIImage(systemName: "play.fill"), for: .normal) // Change back to play icon
-            }
+
+    
+    
+//    @objc private func sliderValueChanged(_ sender: UISlider) {
+//          guard let player = player, let playerItem = playerItem else { return }
+//
+//          // Get the duration of the audio
+//          let duration = CMTimeGetSeconds(playerItem.duration)
+//          let newTime = duration * Double(sender.value)
+//
+//          // Seek to the corresponding time
+//          let seekTime = CMTime(seconds: newTime, preferredTimescale: 1)
+//          player.seek(to: seekTime)
+//      }
+//    
+    
+    
+    fileprivate func populateScripts() {
+        guard let courseScripts = course?.script else { return }
+
+        courseScripts.forEach { script in
+            let scriptView = ReusableScriptView()
+            scriptView.translatesAutoresizingMaskIntoConstraints = false
+            scriptView.passData(script: script)
+//   
+
+            // Add scriptView to allScriptStack
+            allScriptStack.addArrangedSubview(scriptView)
+//            allScriptStack.backgroundColor = .red
+            // Set alignment based on the speaker
+//            allScriptStack.alignment = .center
         }
-    
-    @objc private func sliderValueChanged(_ sender: UISlider) {
-          guard let player = player, let playerItem = playerItem else { return }
+    }
 
-          // Get the duration of the audio
-          let duration = CMTimeGetSeconds(playerItem.duration)
-          let newTime = duration * Double(sender.value)
-
-          // Seek to the corresponding time
-          let seekTime = CMTime(seconds: newTime, preferredTimescale: 1)
-          player.seek(to: seekTime)
-      }
-    
     
     
     
     //MARK: - Set Constaints
     fileprivate func setUpConstraints() {
+//        guard let scriptView = scriptView else { return }
+
         NSLayoutConstraint.activate([
          
             scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
@@ -249,8 +298,7 @@ class DetailView: UIView {
             contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo:
-                scrollView.trailingAnchor),
+            contentView.trailingAnchor.constraint(equalTo:scrollView.trailingAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
             
@@ -261,24 +309,14 @@ class DetailView: UIView {
             courseLevel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,constant: 24),
             
             
-            courseImageView.topAnchor.constraint(equalTo: courseLevel.bottomAnchor, constant: 24),
-            courseImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            courseImageView.leadingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leadingAnchor,constant: 24),
-            courseImageView.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor,constant: -24),
-            courseImageView.heightAnchor.constraint(equalToConstant: 220),
+            webView.topAnchor.constraint(equalTo: courseLevel.bottomAnchor, constant: 24),
+            webView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            webView.leadingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leadingAnchor,constant: 24),
+            webView.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor,constant: -24),
+            webView.heightAnchor.constraint(equalToConstant: 220),
         
-            
-            playButton.topAnchor.constraint(equalTo: courseImageView.bottomAnchor, constant: 24),
-            playButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,constant: 24),
-            
-            audioProgressBar.topAnchor.constraint(equalTo: courseImageView.bottomAnchor, constant: 26),
-            audioProgressBar.leadingAnchor.constraint(equalTo: playButton.trailingAnchor, constant: 8),
-            audioProgressBar.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -24),
-            audioProgressBar.heightAnchor.constraint(equalToConstant: 18),
-            
-            
-            
-            descriptionHeading.topAnchor.constraint(equalTo: audioProgressBar.bottomAnchor, constant: 24),
+
+            descriptionHeading.topAnchor.constraint(equalTo: webView.bottomAnchor, constant: 24),
             descriptionHeading.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,constant: 24),
             
             courseDescription.topAnchor.constraint(equalTo: descriptionHeading.bottomAnchor, constant: 12),
@@ -286,11 +324,25 @@ class DetailView: UIView {
             
             courseDescription.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,constant: -24),
             
+            scriptHeading.topAnchor.constraint(equalTo: courseDescription.bottomAnchor,constant: 24),
+            scriptHeading.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 24),
             
-            courseDescription.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -24),
+      
+            allScriptStack.topAnchor.constraint(equalTo: scriptHeading.bottomAnchor, constant: 24),
+                
+            allScriptStack.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+//            allScriptStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,constant: 24),
+//            allScriptStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -24),
+//            allScriptStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -24),
+            allScriptStack.widthAnchor.constraint(equalTo: contentView.widthAnchor)
+//            scriptView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,constant: -24)
             
             
-           
+//            
+//            scriptView.topAnchor.constraint(equalTo: scriptHeading.bottomAnchor,constant: 24),
+//            scriptView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+//            scriptView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,constant:  24),
+     
         ])
         
     }

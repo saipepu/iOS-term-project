@@ -33,7 +33,7 @@ extension NetworkingManager {
         }
         
         //MARK: - Post and Put
-        if let data = data, getMethod == "POST" || getMethod == "PUT" {
+        if let data = data, getMethod == "POST" || getMethod == "PUT" || getMethod == "PATCH" {
             do{
                 let jsonData = try JSONEncoder().encode(data)
                 request.httpBody = jsonData
@@ -66,9 +66,7 @@ extension NetworkingManager {
                 return
             }
             
-            if getMethod == "POST" || getMethod == "PUT" {
-                return
-            }
+            
             
             //MARK: - Get and Delete
             if let responseData = data {
@@ -85,6 +83,9 @@ extension NetworkingManager {
                 } catch {
                     completion(.failure(error))
                 }
+            }
+            if getMethod == "POST" || getMethod == "PUT" {
+                return
             }
         }
         task.resume()

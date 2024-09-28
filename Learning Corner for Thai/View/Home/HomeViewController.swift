@@ -7,7 +7,7 @@
 
 import UIKit
 import Combine
-
+import KeychainSwift
 
 class HomeViewController: UIViewController {
     
@@ -16,8 +16,10 @@ class HomeViewController: UIViewController {
     private let usersVM : GetAllUserViewModel
 //    private let courses = CourseMock.instance.courses
     private let coursesVM : GetCourseViewModel
-//    private let currentUserVM : GetUserByUserIdViewModel
+    private var currentUserVM = GetUserByUserIdViewModel()
     
+    private var filteredCourses: [CourseModel2] = []
+
     // for fetching current user
     //let currentUserVM = GetUserByUserIdViewModel.instance
     
@@ -26,8 +28,9 @@ class HomeViewController: UIViewController {
     
     // for fetching courses
    // let coursesVM = GetCourseViewModel.instance
-    private let searchBar = ReusableSearchBar()
+    private let searchBar = UISearchBar()
     private let courseCell = CourseCell()
+    private let googleService = GoogleService()
     //MARK: - UI Components
     
     private let scrollView : UIScrollView = {
@@ -44,33 +47,37 @@ class HomeViewController: UIViewController {
     
     
     
-    private let profileImageView : UIImageView = {
-        let profileImageView = UIImageView()
-        profileImageView.translatesAutoresizingMaskIntoConstraints = false
-        profileImageView.image = UIImage(named: "profile_1")
-        profileImageView.contentMode = .scaleAspectFit
-        profileImageView.tintColor = .blue
-        return profileImageView
-    }()
+    private let profileImageView : UIButton = {
+            
+            let profileImageView = UIButton()
+            profileImageView.translatesAutoresizingMaskIntoConstraints = false
+            profileImageView.setImage(UIImage(named: "cap"), for: .normal)
+            profileImageView.contentMode = .scaleAspectFit
+            
+            profileImageView.addTarget(self, action: #selector(navigateToUserProfile), for: .touchUpInside)
+            
+            return profileImageView
+        }()
+        
+        private let switchRoleButton : UIButton = {
+            let button = UIButton()
+            button.translatesAutoresizingMaskIntoConstraints = false
+            button.setImage(UIImage(systemName: "rectangle.portrait.and.arrow.right"), for: .normal)
+            button.tintColor = .red
+            button.imageView?.contentMode = .scaleAspectFill
+            button.addTarget(self, action: #selector(roleSwitched), for: .touchUpInside)
+            return button
+        }()
+        
+        private lazy var headerHStack : UIStackView = {
+            let hStack = UIStackView(arrangedSubviews: [profileImageView, switchRoleButton])
+            hStack.axis = .horizontal
+            hStack.distribution = .equalSpacing
+            hStack.alignment = .center
+            hStack.translatesAutoresizingMaskIntoConstraints = false
+            return hStack
+        }()
     
-    
-    private let switchRoleButton : UIButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(UIImage(named: Constants.roleSwtichButton), for: .normal)
-        button.imageView?.contentMode = .scaleAspectFill
-        button.addTarget(self, action: #selector(roleSwitched), for: .touchUpInside)
-        return button
-    }()
-    
-    private lazy var headerHStack : UIStackView = {
-        let hStack = UIStackView(arrangedSubviews: [profileImageView, switchRoleButton])
-        hStack.axis = .horizontal
-        hStack.distribution = .equalSpacing
-        hStack.alignment = .center
-        hStack.translatesAutoresizingMaskIntoConstraints = false
-        return hStack
-    }()
     
     private let nameCalloutLabel : UILabel = {
         let label = UILabel()
@@ -115,7 +122,7 @@ class HomeViewController: UIViewController {
     }()
     
     private lazy var courseHeadingHStack : UIStackView = {
-        let hStack = UIStackView(arrangedSubviews: [conversationsLabel,seeAllButton])
+        let hStack = UIStackView(arrangedSubviews: [conversationsLabel])
         hStack.translatesAutoresizingMaskIntoConstraints = false
         hStack.axis = .horizontal
         hStack.alignment = .center
@@ -179,6 +186,18 @@ class HomeViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
  
+    override func viewWillAppear(_ animated: Bool) {
+        // Initially display all courses
+        searchBar.backgroundColor = .clear
+        filteredCourses = coursesVM.courseData ?? []
+        coursesVM.onCoursesUpdate = {
+            self.filteredCourses = self.coursesVM.courseData ?? []
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+            }
+        }
+           
+    }
     
     
     override func viewDidLoad() {
@@ -186,15 +205,27 @@ class HomeViewController: UIViewController {
         print("HomeViewController loaded")
         
         
+        
         view.backgroundColor = .white
         tableView.delegate = self
         tableView.dataSource = self
         collectionView.delegate = self
         collectionView.dataSource = self
+        searchBar.delegate = self
         tableView.register(LeaderboardCell.self, forCellReuseIdentifier: Constants.leaderboardCellIdentifier)
         collectionView.register(CourseCell.self, forCellWithReuseIdentifier: Constants.courseCellIdentifier)
+        
         setUpUI()
         setUpConstraints()
+        
+        coursesVM.onCoursesUpdate = {
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+            }
+        }
+           
+        
+        collectionView.reloadData()
         
      
   
@@ -221,14 +252,19 @@ class HomeViewController: UIViewController {
         contentView.addSubview(searchBar)
         contentView.addSubview(courseHeadingHStack)
         contentView.addSubview(collectionView)
-        contentView.addSubview(leaderboardHeading)
-        contentView.addSubview(tableView)
-        contentView.addSubview(testString)
+//        contentView.addSubview(leaderboardHeading)
+//        contentView.addSubview(tableView)
         view.layoutIfNeeded()
+        
+        currentUserVM.onUserUpdated = { [weak self] in
+            guard let self = self else { return }
+            nameCalloutLabel.text = "Hey \(currentUserVM.updatedUserName)"
+        }
+     
 
         self.usersVM.onUsersUpdated = {
             DispatchQueue.main.async {
-                print("Fetched users: \(self.usersVM.userData)")
+//                print("Fetched users: \(self.usersVM.userData)")
                self.tableView.reloadData()
             }
         }
@@ -242,6 +278,25 @@ class HomeViewController: UIViewController {
         nameCalloutLabel.text = usersVM.userData?.first?.name
         
     }
+    
+    private func filterCourses(for searchText: String) {
+        guard let allCourses = coursesVM.courseData else { return }
+
+        if searchText.isEmpty {
+            // Show all courses if search text is empty
+            filteredCourses = allCourses
+        } else {
+            // Filter courses based on title or description
+            filteredCourses = allCourses.filter { course in
+                return ((course.title?.lowercased().contains(searchText.lowercased()) ?? false))
+            }
+        }
+        
+        collectionView.reloadData() // Reload collection view with filtered data
+    }
+
+
+
     
     //MARK: - Set Up Constraints
     fileprivate func setUpConstraints() {
@@ -307,22 +362,20 @@ class HomeViewController: UIViewController {
                 collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
                 collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
                 collectionView.heightAnchor.constraint(equalToConstant: 220),
-                
+                collectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,constant: -24)
                 
                 // Leaderboard Heading Constraints
-                leaderboardHeading.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 32),
-                leaderboardHeading.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
+//                leaderboardHeading.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 32),
+//                leaderboardHeading.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
                 
                 // Table View Constraints
-                tableView.topAnchor.constraint(equalTo: leaderboardHeading.bottomAnchor, constant: 12),
-                  tableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-                  tableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+//                tableView.topAnchor.constraint(equalTo: leaderboardHeading.bottomAnchor, constant: 12),
+//                  tableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+//                  tableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
 //                  tableView.heightAnchor.constraint(equalToConstant: tableViewHeight),
 //                  tableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -24),
 
-                testString.topAnchor.constraint(equalTo: tableView.bottomAnchor,constant: 24),
-                testString.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-                testString.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,constant: -24)
+             
                 ])
               
             
@@ -332,11 +385,17 @@ class HomeViewController: UIViewController {
     //MARK: - Set Up Actions
     @objc fileprivate func roleSwitched() {
         print("Role is switched")
+        googleService.signOutWithGoogle()
         tableView.reloadData()
     }
     
     @objc fileprivate func seeAllClicked() {
         print("See all is clicked")
+    }
+    
+    
+    @objc fileprivate func navigateToUserProfile() {
+        navigationController?.pushViewController(ProfileViewController(), animated: true)
     }
     
     
@@ -361,6 +420,7 @@ extension HomeViewController : UITableViewDelegate, UITableViewDataSource {
          
          cell.configure(at: indexPath, user: users[indexPath.row])
          
+        
          return cell
     }
     
@@ -372,24 +432,41 @@ extension HomeViewController : UITableViewDelegate, UITableViewDataSource {
 //MARK: - Text Field Delegate Methods
 extension HomeViewController : UISearchBarDelegate {
     
+        func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+            filterCourses(for: searchText)
+        }
+        
+        func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+            searchBar.text = ""
+            searchBar.resignFirstResponder() // Dismiss the keyboard
+            filterCourses(for: "")
+        }
+        
+        func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+            searchBar.resignFirstResponder() // Dismiss the keyboard
+        }
+    
 }
 
 //MARK: - Text Field Delegate Methods
 extension HomeViewController : UICollectionViewDelegateFlowLayout,UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return coursesVM.courseData?.count ?? 0
-        print("num of courses" ,coursesVM.courseData?.count ?? 0)
+//        return coursesVM.courseData?.count ?? 0
+        return filteredCourses.count
 //        return courses.count
       }
       
       func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-          let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.courseCellIdentifier, for: indexPath) as! CourseCell
-          guard let courses = coursesVM.courseData else { return cell }
-          print("Configuring course cell at row: \(indexPath.row) for user: \(courses[indexPath.row])")
-          cell.configure(course: courses[indexPath.row])
+//          let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.courseCellIdentifier, for: indexPath) as! CourseCell
+//          guard let courses = coursesVM.courseData else { return cell }
 //          cell.configure(course: courses[indexPath.row])
-          return cell
+////          cell.configure(course: courses[indexPath.row])
+//          return cell
+          let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.courseCellIdentifier, for: indexPath) as! CourseCell
+              let course = filteredCourses[indexPath.row]
+            cell.configure(course: course)
+              return cell
       }
       
     

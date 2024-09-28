@@ -11,20 +11,26 @@ import UIKit
 
 // 6. make calculate function that accepts array of quiz index, and final socre
 
+import AVFoundation
+import KeychainSwift
+
+protocol QuizViewDelegate: AnyObject {
+    func didFinishQuiz()
+}
 
 
-
-
-
-class QuizView: UIView {
-
+class QuizView: UIView , AVAudioPlayerDelegate {
+    var audioPlayer : AVAudioPlayer?
+    var isPlaying = false
     let optionRow : ReusableOptionRow? = nil
-    var updateScoreVM : UpdateScoreViewModel? = nil
+    var updateScoreVM : UpdateScoreViewModel?
     var quizzez : [QuizModel]?
     var quizQuestionIndex = 0
     var quiz: QuizModel? = nil
     var finalScore = 0
     var courseExp = 0
+    weak var delegate: QuizViewDelegate?
+    var keyChain = KeychainSwift()
 
     private var selectedOptionRow: ReusableOptionRow? // Track the selected row
     var correctAnswer : OptionModel? = nil
@@ -42,11 +48,30 @@ class QuizView: UIView {
         return question
     }()
     
+    
+
+    private let playButton: UIButton = {
+        let button = UIButton()
+        let largeConfig = UIImage.SymbolConfiguration(pointSize: 30, weight: .bold, scale: .medium)
+        let playImage = UIImage(systemName: "play.circle",withConfiguration: largeConfig)
+        button.setImage(playImage, for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.tintColor = .systemBlue
+        button.frame.size = CGSize(width: 30, height: 30)
+        button.addTarget(self, action: #selector(playLocalAudio), for: .touchUpInside)
+
+        return button
+    }()
+    
+    
+    
+    
     private let progressBar: UIProgressView = {
           let progressView = UIProgressView(progressViewStyle: .default)
           progressView.translatesAutoresizingMaskIntoConstraints = false
-          progressView.progressTintColor = UIColor.blue // Set color for the progress
+        progressView.progressTintColor = UIColor(named: Theme.tint) // Set color for the progress
           progressView.trackTintColor = UIColor.lightGray
+        progressView.layer.cornerRadius = 12
           progressView.setProgress(0.0, animated: true) // Initial progress
           return progressView
       }()
@@ -78,17 +103,21 @@ class QuizView: UIView {
     }()
     
     
-    override init(frame: CGRect) {
+     init(frame: CGRect,updateScoreVM : UpdateScoreViewModel) {
+        self.updateScoreVM = updateScoreVM
+
         super.init(frame: frame)
+        
 //        assignCurrentQuestion()
         setUpUI()
         setUpConstraints()
-        
+
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
     
     public func configure(quizzez: [QuizModel], courseExp: Int) {
         self.quizzez = quizzez
@@ -171,6 +200,7 @@ class QuizView: UIView {
        
     }
     
+    
     @objc func submitPressed() {
         
         
@@ -178,6 +208,7 @@ class QuizView: UIView {
             //here
             print("this func is called")
             updateUserDetail()
+//            delegate?.didFinishQuiz()
         }
         
         guard let selectedRow = selectedOptionRow, let selectedOption = selectedOption else {
@@ -193,10 +224,62 @@ class QuizView: UIView {
         
     }
     
+    
+    @objc func playLocalAudio() {
+        if isPlaying {
+            // Pause the audio if currently playing
+            audioPlayer?.pause()
+            togglePlayPauseButton(isPlaying: false)
+            isPlaying = false
+        } else {
+            // Start playing the audio
+            do {
+                if let audioFilePath = Bundle.main.path(forResource:quiz?.audioFile, ofType: "m4a") {
+                    let audioFileUrl = URL(fileURLWithPath: audioFilePath)
+                    audioPlayer = try AVAudioPlayer(contentsOf: audioFileUrl)
+                    audioPlayer?.delegate = self // Set delegate to detect when audio finishes
+                    audioPlayer?.prepareToPlay()
+                    audioPlayer?.play()
+                    
+                    togglePlayPauseButton(isPlaying: true)
+                    isPlaying = true
+                }
+            } catch {
+                print("Error initializing audio player: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    // This method toggles the play/pause button image
+    func togglePlayPauseButton(isPlaying: Bool) {
+        let largeConfig = UIImage.SymbolConfiguration(pointSize: 30, weight: .bold, scale: .medium)
+        let newImage = isPlaying ?
+            UIImage(systemName: "pause.circle", withConfiguration: largeConfig) :
+            UIImage(systemName: "play.circle", withConfiguration: largeConfig)
+        playButton.setImage(newImage, for: .normal)
+    }
+
+    // This delegate method is called when the audio finishes playing
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        // Reset to play icon when audio finishes
+        togglePlayPauseButton(isPlaying: false)
+        isPlaying = false
+    }
+    
     @objc func nextPressed() {
 
+        
         quizQuestionIndex += 1
         updateProgress()
+        if let quizCount = quizzez?.count , quizQuestionIndex == quizCount  {
+            //here
+            print("next page navigated")
+            delegate?.didFinishQuiz()
+        }
+        
+        
+      
+ 
         
         guard let quizzez = quizzez, quizQuestionIndex < quizzez.count else {
                 print("No more questions.")
@@ -228,7 +311,8 @@ class QuizView: UIView {
     private func checkAnswer(selectedRow: ReusableOptionRow,option : OptionModel) {
         guard let correctAnswer = correctAnswer, let point = quiz?.point else { return }
         print("You choose \(option.content) and correctAnswer is \(correctAnswer.content)")
-        if correctAnswer._id == option._id {
+//        if correctAnswer._id == option._id {
+        if let isCorrect = option.isCorrect, isCorrect {
             selectedRow.isCorrect = true
             finalScore += point
         } else { // correctAnswer.content != option.content
@@ -246,13 +330,21 @@ class QuizView: UIView {
     
     
     private func updateUserDetail() {
-        if let updateScoreVM = updateScoreVM {
-            UpdateScoreViewModel(point: finalScore, exp: courseExp)
-            updateScoreVM.exp = courseExp
-            updateScoreVM.point = finalScore
-            updateScoreVM.updateScore(userId: "66f46218075c041d3fde45cb")
-            print("User updated")
+        guard let updateScoreVM = updateScoreVM else {
+             print("ViewModel not initialized.")
+             return
+         }
+         
+         // Update ViewModel properties
+         updateScoreVM.exp = courseExp
+         updateScoreVM.point = finalScore
+         
+         // Pass user ID for the update
+        if let id = keyChain.get("userId") {
+            
+            updateScoreVM.updateScore(userId: id)
         }
+         print("User updated")
     }
     
     private func updateProgress() {
@@ -269,6 +361,7 @@ class QuizView: UIView {
         addSubview(submitButton)
         addSubview(nextButton)
         addSubview(progressBar)
+        addSubview(playButton)
         nextButton.isHidden = true
     }
     
@@ -277,15 +370,18 @@ class QuizView: UIView {
         NSLayoutConstraint.activate([
             
             
-            progressBar.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
+            progressBar.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor,constant: 24),
             progressBar.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 24),
             progressBar.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -24),
-                       
-            
+            progressBar.heightAnchor.constraint(equalToConstant: 8),
             
             question.topAnchor.constraint(equalTo: progressBar.topAnchor, constant: 24),
             question.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 24),
-            question.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -24),
+//            question.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -24),
+            
+            playButton.topAnchor.constraint(equalTo: progressBar.bottomAnchor, constant: 14),
+            playButton.leadingAnchor.constraint(equalTo: question.trailingAnchor, constant: 12),
+            
             
             quizStack.topAnchor.constraint(equalTo: question.bottomAnchor, constant: 24),
             quizStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 24),
@@ -299,6 +395,7 @@ class QuizView: UIView {
             nextButton.topAnchor.constraint(equalTo: quizStack.bottomAnchor, constant: 24),
             nextButton.trailingAnchor.constraint(equalTo: trailingAnchor,constant: -24),
             nextButton.bottomAnchor.constraint(equalTo: bottomAnchor),
+            
         ])
     }
 }

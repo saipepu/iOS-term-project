@@ -24,7 +24,7 @@ struct UserModel : Codable {
     let email : String?
     let password : String?
     let point : Int?
-    let number : Int?
-    let courses : [CourseModel]?
+    let exp : Int?
+    var courses : [CourseModel2]?
     let assets : [AssetModel]?
 }

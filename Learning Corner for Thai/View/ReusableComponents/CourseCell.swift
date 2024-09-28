@@ -64,12 +64,15 @@ class CourseCell:  UICollectionViewCell {
     public func configure(course : CourseModel2) {
         self.course = course
         //injecting model instance
-        self.courseImageView.image = UIImage(named: course.photo)
-        self.courseName.text = course.title
-        self.coursePoint.text = "\(course.exp) XP"
-//        self.courseImageView.image = UIImage(named: course.courseImage)
-//        self.courseName.text = course.courseName
-//        self.coursePoint.text = "\(course.coursePoints) XP"
+        if let coursePhoto = course.photo, let courseExp = course.exp {
+            self.courseImageView.image = UIImage(named: coursePhoto)
+            self.courseName.text = course.title
+        
+            self.coursePoint.text = "\(courseExp) XP"
+            //        self.courseImageView.image = UIImage(named: course.courseImage)
+            //        self.courseName.text = course.courseName
+            //        self.coursePoint.text = "\(course.coursePoints) XP"
+        }
     }
     
     

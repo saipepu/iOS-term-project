@@ -13,10 +13,14 @@ struct Theme {
     static let headingFont = "SFProDisplay-Bold"
     static let bodyFont = "SFProDisplay-Regular"
     static let labelFont = "SFProDisplay-Medium"
+    static let scriptFont = "SFProDisplay-Medium"
+
     
     static let headingSize = 28
     static let bodySize = 18
     static let labelSize = 18
+    static let scriptSize = 12
+    
     
     //MARK: - Spacing
     static let defaultSpacing = 12

@@ -9,6 +9,7 @@ import Foundation
 
 struct QuizModel : Codable {
     let _id : String?
+    let audioFile : String?
     let question : String?
     let photo : String?
     let options : [OptionModel]?

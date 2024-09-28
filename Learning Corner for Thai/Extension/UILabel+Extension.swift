@@ -30,6 +30,11 @@ extension UILabel {
          self.textColor = UIColor.gray
      }
     
+    func applyScriptFont() {
+        self.font = UIFont(name: Theme.scriptFont, size: CGFloat(Theme.scriptSize))
+        self.textColor = UIColor.gray
+    }
+    
     func applyPrimaryLabelColor() {
         self.textColor = .themePrimaryLabel
        }

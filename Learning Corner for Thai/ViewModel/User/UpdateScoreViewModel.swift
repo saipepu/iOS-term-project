@@ -24,13 +24,13 @@ class UpdateScoreViewModel {
         
         
         let updateScore = UpdateScoreEndPoint(userId: userId)
-        updateScore.execute(data: userScore,getMethod: "PUT") { [weak self] result in
+        updateScore.execute(data: userScore,getMethod: "PATCH") { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(_):
-                    print("Success")
                     break;
                 case .failure(let error):
+                    print("Error \(error)")
                     print(error.localizedDescription)
                     break;
                 }

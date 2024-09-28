@@ -36,6 +36,7 @@ class LeaderboardViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        self.navigationItem.title = "Leaderboard"
         self.setUpUI()
         self.setUpConstraints()
         tableView.delegate = self

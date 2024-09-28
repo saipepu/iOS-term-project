@@ -1,4 +1,3 @@
-//
 //  GoogleService.swift
 //  Learning Corner for Thai
 //
@@ -9,8 +8,12 @@ import Foundation
 import GoogleSignIn
 import Firebase
 import FirebaseAuth
+import UIKit
 
 class GoogleService {
+    
+    var signUpViewModel : UserSignUpViewModel? = nil
+    
     
     func signInWithGoogle() {
         print("GoogleService")
@@ -39,21 +42,14 @@ class GoogleService {
                     print("Firebase")
                     return
                 }
-                
                 print("User successfully logged in")
-                UserDefaults.standard.set(true, forKey: "AppState")
-                
-                if let window = UIApplication.shared.connectedScenes
-                    .compactMap({ $0 as? UIWindowScene })
-                    .first?.windows.first {
-                        
-                        let homeViewController = HomeViewController() // Replace with your login VC
-                        window.rootViewController = homeViewController
-                        window.makeKeyAndVisible()
-                        
-                    }
-                
+                let user = authResult?.user
 
+                self.signUpViewModel = UserSignUpViewModel(name: user?.displayName ?? "", email: user?.email ?? "", firebaseId: user?.uid ?? "")
+                self.signUpViewModel?.signUp()
+                print("userss are posted in google service")
+           
+                
             }
             
         }

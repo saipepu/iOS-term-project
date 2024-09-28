@@ -10,7 +10,7 @@ import Foundation
 // MARK: - Script Model
 struct ScriptModel: Codable {
     let speaker: String
-//    let content: String
+    let content: ContentModel
     let audioFile: String
     let _id: String
     let words: [Word]
@@ -18,5 +18,14 @@ struct ScriptModel: Codable {
 
 // MARK: - Word Model
 struct Word: Codable {
+    
+}
+
+struct ContentModel : Codable {
+    
+    let English : String
+    let Roman : String
+    let Thai : String
+    
     
 }

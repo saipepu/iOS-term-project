@@ -12,13 +12,8 @@ class BaseTabController: UITabBarController {
     
     private let usersVM : GetAllUserViewModel = GetAllUserViewModel()
     private let coursesVM : GetCourseViewModel = GetCourseViewModel()
+    private let assetsVM: GetAllAssetViewModel = GetAllAssetViewModel()
 
-    
-    
-    
-  
-    
-   
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -31,27 +26,28 @@ class BaseTabController: UITabBarController {
         UITabBar.appearance().standardAppearance = tabBarAppearance
         UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
         
-         let currentUserId = "66f46218075c041d3fde45cb"
+        let currentUserId = "66f69e37c229ba6337074111"
             
-            let homeVC = HomeViewController(usersVM: usersVM, coursesVM: coursesVM)
-            homeVC.tabBarItem = UITabBarItem(title: nil, image: UIImage(named: Constants.home), selectedImage: nil)
+        let homeVC = HomeViewController(usersVM: usersVM, coursesVM: coursesVM)
+//        let homeVC = AssetShopViewController();
+        homeVC.tabBarItem = UITabBarItem(title: nil, image: UIImage(systemName: "house"), selectedImage: nil)
+        
+        
+        let leaderboardVC = LeaderboardViewController(usersVM: usersVM)
+        leaderboardVC.tabBarItem = UITabBarItem(title: nil, image: UIImage(named: Constants.leaderboard), selectedImage: nil)
+        
+        let assetShopVC = AssetShopViewController(assetsVM: assetsVM)
+        assetShopVC.tabBarItem = UITabBarItem(title: nil, image: UIImage(systemName: "bag"), selectedImage: nil)
+        
+        
+        let homeNavigation = UINavigationController(rootViewController: homeVC )
+        let leaderboardNavigation = UINavigationController(rootViewController: leaderboardVC )
+        let assetShopNavigation = UINavigationController(rootViewController: assetShopVC)
+        
+        
+        viewControllers = [homeNavigation,leaderboardNavigation,assetShopNavigation]
             
-            
-            let leaderboardVC = LeaderboardViewController(usersVM: usersVM)
-            leaderboardVC.tabBarItem = UITabBarItem(title: nil, image: UIImage(named: Constants.leaderboard), selectedImage: nil)
-            
-            let profileVC = ProfileViewController()
-            profileVC.tabBarItem = UITabBarItem(title: nil, image: UIImage(named: Constants.profile), selectedImage: nil)
-            
-            
-            let homeNavigation = UINavigationController(rootViewController: homeVC )
-            let leaderboardNavigation = UINavigationController(rootViewController: leaderboardVC )
-            let profileNavigation = UINavigationController(rootViewController: profileVC)
-            
-            
-            viewControllers = [homeNavigation,leaderboardNavigation,profileNavigation]
-            
-        }
+    }
     
     
 

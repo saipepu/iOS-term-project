@@ -6,10 +6,11 @@
 //
 
 import Foundation
+import KeychainSwift
 
 class GetUserByUserIdViewModel : ObservableObject {
 
-    
+    let keyChain = KeychainSwift()
     private(set) var userDetail: UserModel? = nil {
                didSet {
                    self.onUserUpdated?()
@@ -20,10 +21,15 @@ class GetUserByUserIdViewModel : ObservableObject {
 
   var errorMessage: String? = nil
      
+    var updatedUserName : String {
+        return userDetail?.name ?? ""
+    }
     
-    
-    init(id:String) {
-        getOneUserById(id:id)
+    init() {
+        if let id = keyChain.get("userId") {
+            print("ID\(id)")
+            getOneUserById(id: id)
+        }
     }
      func getOneUserById(id: String) {
          errorMessage = nil
@@ -33,7 +39,7 @@ class GetUserByUserIdViewModel : ObservableObject {
                  switch result {
                  case .success(let userDetailData):
                      self.userDetail = userDetailData.message
-                     print("Success getting one user")
+                     print("User by id fetched")
                  case .failure(let error):
                      self.errorMessage = "Failed to get user detail by id: \(error.localizedDescription)"
                      print(self.errorMessage)

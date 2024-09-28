@@ -55,11 +55,11 @@ class DetailViewController: UIViewController {
         }
          
         
-        view.addSubview(navigationButton)
+        detailView.contentView.addSubview(navigationButton)
         navigationButton.translatesAutoresizingMaskIntoConstraints = false
-        
+
         NSLayoutConstraint.activate([
-            navigationButton.topAnchor.constraint(equalTo: detailView.courseDescription.bottomAnchor, constant: 24),
+            navigationButton.topAnchor.constraint(equalTo: detailView.allScriptStack.bottomAnchor, constant: 24),
             navigationButton.centerXAnchor.constraint(equalTo: detailView.contentView.centerXAnchor),
             navigationButton.heightAnchor.constraint(equalToConstant: 40),
             navigationButton.widthAnchor.constraint(equalToConstant: 200),

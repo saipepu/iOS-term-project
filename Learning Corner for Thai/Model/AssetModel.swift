@@ -20,11 +20,17 @@
 
 import Foundation
 
+
 struct AssetModel : Codable {
     let _id : String?
     let name : String?
     let photo : String?
     let point : Int?
+}
+
+struct AssetResponse : Codable {
+    let success : Bool
+    let message : [AssetModel]
 }
 
 

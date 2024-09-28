@@ -13,7 +13,7 @@ struct QuizMock {
     private init() {}
     
     let quizA = QuizModel(
-        _id: "1",
+        _id: "1", audioFile: "",
         question: "What is the capital of France?",
         photo: "paris.jpg",
         options: [
@@ -26,7 +26,7 @@ struct QuizMock {
     )
     
     let quizB = QuizModel(
-        _id: "2",
+        _id: "2", audioFile: "",
         question: "What is the capital of Myanmar?",
         photo: "paris.jpg",
         options: [
@@ -40,7 +40,7 @@ struct QuizMock {
     
     
     let quizC = QuizModel(
-        _id: "3",
+        _id: "3", audioFile: "",
         question: "What is the capital of Africa?",
         photo: "paris.jpg",
         options: [
@@ -54,7 +54,7 @@ struct QuizMock {
 
     let quizzes = [
         QuizModel(
-            _id: "1",
+            _id: "1", audioFile: "",
             question: "What is the capital of Mandalay?",
             photo: "paris.jpg",
             options: [
@@ -67,7 +67,7 @@ struct QuizMock {
         ),
         
         QuizModel(
-            _id: "2",
+            _id: "2", audioFile: "",
             question: "What is the capital of Myanmar?",
             photo: "paris.jpg",
             options: [
@@ -80,7 +80,7 @@ struct QuizMock {
         ),
         
         QuizModel(
-            _id: "3",
+            _id: "3", audioFile: "",
             question: "What is the capital of Africa?",
             photo: "paris.jpg",
             options: [
